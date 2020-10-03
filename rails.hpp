@@ -15,7 +15,6 @@ namespace loopline
         std::vector<sf::Vector2f> controlPoints;
         std::vector<float> railLengths;
 
-
         public:
         Rails(std::vector<sf::Vector2f> pts = {});
         ~Rails();
