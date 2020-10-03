@@ -7,6 +7,7 @@
 #include <vector>
 #include <functional>
 
+#include "rails.hpp"
 #include "inputManager.hpp"
 #include "train.hpp"
 
@@ -30,12 +31,12 @@ int main()
     bool update = true;
 
     loopline::InputManager inputManager;
-    loopline::Train train;
+    loopline::Rails rails({{10.f, 10.f}, {790.f, 10.f}, {10.f, 590.f}});
 
-    inputManager.addEventCommand(train.accel, sf::Keyboard::W);
-    inputManager.addEventCommand(train.deaccel, sf::Keyboard::S);
-    inputManager.addReleaseEventCommand(train.noaccel, sf::Keyboard::W);
-    inputManager.addReleaseEventCommand(train.noaccel, sf::Keyboard::S);
+    inputManager.addEventCommand(rails.train.accel, sf::Keyboard::W);
+    inputManager.addEventCommand(rails.train.deaccel, sf::Keyboard::S);
+    inputManager.addReleaseEventCommand(rails.train.noaccel, sf::Keyboard::W);
+    inputManager.addReleaseEventCommand(rails.train.noaccel, sf::Keyboard::S);
 
     inputManager.addEventCommand(std::make_shared<loopline::LambdaCommand>([&window]() { window.close(); }), sf::Keyboard::Escape);
 
@@ -70,7 +71,7 @@ int main()
         {
             inputManager.fixedUpdate(updateTime);
 
-            train.fixedUpdate(updateTime);
+            rails.fixedUpdate(updateTime);
 
             // don't forget to subtract the updateTime each cycle ;-)
             elapsed -= updateTime;
@@ -80,12 +81,12 @@ int main()
         // only redraw if there has been an update!
         if(update)
         {
-            train.update(elapsed);
+            rails.update(elapsed);
 
             // clear the window with black color
             window.clear(sf::Color::Black);
 
-            train.draw(window);
+            rails.draw(window);
 
             window.display();
 
