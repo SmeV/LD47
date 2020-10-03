@@ -9,6 +9,7 @@ add_executable(LD47
     main.cpp 
     textureManager.cpp
     inputManager.cpp
+    drawable.cpp
     train.cpp
     rails.cpp
     game.cpp

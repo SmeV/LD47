@@ -17,18 +17,6 @@ namespace loopline
 
     }
 
-    void Train::setWorldposition(sf::Vector2f const &worldPos)
-    {
-        sprite.setPosition(worldPos);
-    }
-
-    void Train::setSprite(sf::Texture const& tex, sf::IntRect const& rect, sf::Vector2f const& origin)
-    {
-        sprite.setTexture(tex);
-        sprite.setTextureRect(rect);
-        sprite.setOrigin(origin);
-    }
-
     void Train::update(sf::Time const &deltaTime)
     {
     }
@@ -42,9 +30,5 @@ namespace loopline
         if (speed < 0) speed = 0.0f;
         else if (speed >= maxSpeed) speed = maxSpeed;
     } 
-    void Train::draw(sf::RenderWindow &window) const
-    {
-        window.draw(this->sprite);
-    }
 
 } // namespace loopline
