@@ -5,10 +5,11 @@
 
 #include "command.hpp"
 #include "updatable.hpp"
+#include "drawable.hpp"
 
 namespace loopline
 {
-    class Train : public Updatable
+    class Train : public Updatable, public Drawable
     {
     private:
         friend class Rails;
@@ -19,18 +20,13 @@ namespace loopline
         float railPosition;
 
         float length;
-        sf::Sprite sprite;
-        sf::Texture slimeTexture;
 
     public:
         Train();
         ~Train();
 
-        void setWorldposition(sf::Vector2f const &worldPos);
-
         virtual void update(sf::Time const &deltaTime);
         virtual void fixedUpdate(sf::Time const &deltaTime);
-        virtual void draw(sf::RenderWindow &window) const;
 
         std::shared_ptr<LambdaCommand> accel, deaccel, chime, noaccel;
     };

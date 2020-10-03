@@ -7,7 +7,9 @@ find_package(SFML 2.5.1 COMPONENTS network audio graphics window system REQUIRED
 
 add_executable(LD47
     main.cpp 
+    textureManager.cpp
     inputManager.cpp
+    drawable.cpp
     train.cpp
     rails.cpp
     game.cpp

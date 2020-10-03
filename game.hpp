@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "textureManager.hpp"
 #include "inputManager.hpp"
 #include "rails.hpp"
 #include "station.hpp"
@@ -12,6 +13,7 @@ namespace loopline
     class LoopLine
     {
         private:
+        TextureManager textureManager;
         InputManager inputManager;
 
         sf::RenderWindow window;

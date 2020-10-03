@@ -19,6 +19,9 @@ namespace loopline
 
     void LoopLine::initializeGame()
     {
+        textureManager.loadTexture("slime_monster_24x24/slime_monster_spritesheet.png", "slime_spritesheet");
+        rails.train.setSprite(textureManager.getTexture("slime_spritesheet"), sf::IntRect{0, 48, 72, 24}, {60.f, 12.f});
+
         inputManager.addEventCommand(rails.train.accel, sf::Keyboard::W);
         inputManager.addEventCommand(rails.train.deaccel, sf::Keyboard::S);
         inputManager.addReleaseEventCommand(rails.train.noaccel, sf::Keyboard::W);

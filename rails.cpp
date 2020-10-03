@@ -75,11 +75,11 @@ namespace loopline
 
         float rotationAngleDeg = rotationAngle / M_PI * 180.f;
         
-        if(rotationAngleDeg > 90.f || rotationAngleDeg < -90.f) train.sprite.setScale({1.f,-1.f});
-        else train.sprite.setScale({1.f,1.f});
+        if(rotationAngleDeg > 90.f || rotationAngleDeg < -90.f) train.setSpriteScale({1.f,-1.f});
+        else train.setSpriteScale({1.f,1.f});
             
-        train.setWorldposition(firstTrainPoint);
-        train.sprite.setRotation(rotationAngleDeg);
+        train.setSpritePosition(firstTrainPoint);
+        train.setSpriteRotation(rotationAngleDeg);
     }
 
     void Rails::fixedUpdate(sf::Time const &deltaTime)
