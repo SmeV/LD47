@@ -1,5 +1,6 @@
 #include "rails.hpp"
 
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <cassert>
 
@@ -44,9 +45,13 @@ namespace loopline
         }
 
         if(nextControl == railLengths.size()) nextControl = 0;
+        //float multiplier = (railPosition - railPositionDiscard) / (railLengths[previousControl] - railPositionDiscard);
         float multiplier = (railPosition - railPositionDiscard) / (railLengths[previousControl] - railPositionDiscard);
 
-        return multiplier * controlPoints[nextControl] + (1.f - multiplier) * controlPoints[previousControl];
+        //return multiplier * controlPoints[nextControl] + (1.f - multiplier) * controlPoints[previousControl];
+        float mu2 = (1.f - cosf(multiplier * M_PI))/2.f;
+        
+        return (controlPoints[previousControl]*(1.f-mu2)+controlPoints[nextControl]*mu2);
     }
 
     void Rails::update(sf::Time const &deltaTime)
