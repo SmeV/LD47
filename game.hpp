@@ -12,8 +12,11 @@ namespace loopline
     class LoopLine
     {
         private:
+        enum GameState{ MENU, GAME, PAUSE };
+
         TextureManager textureManager;
         InputManager inputManager;
+        GameState state = GAME;
 
         sf::RenderWindow window;
 
@@ -26,8 +29,11 @@ namespace loopline
         // this saves how much time has passed
         sf::Time elapsed = clock.restart();
 
-
+        sf::View camera;
+        float maxSpeedZoom = 1.25;
         Rails rails;
+
+        sf::RectangleShape greyPause;
 
         public:
         LoopLine();
@@ -37,6 +43,8 @@ namespace loopline
 
         void start();
         void gameLoop();
+
+        void resizeWindow();
 
         virtual void handleEvents();
         virtual void update(sf::Time const &deltaTime);

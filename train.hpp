@@ -13,9 +13,7 @@ namespace loopline
     {
     private:
         friend class Rails;
-        float speed;
         float acceleration;
-        float maxSpeed = 500.0f;
 
         float railPosition;
 
@@ -29,6 +27,8 @@ namespace loopline
         virtual void fixedUpdate(sf::Time const &deltaTime);
 
         std::shared_ptr<LambdaCommand> accel, deaccel, chime, noaccel;
+        float speed;
+        float maxSpeed = 500.0f;
     };
 } // namespace loopline
 
