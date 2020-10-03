@@ -1,3 +1,7 @@
+# more ignore
+build/*
+.vscode/*
+
 # Prerequisites
 *.d
 
