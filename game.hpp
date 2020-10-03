@@ -5,6 +5,7 @@
 
 #include "inputManager.hpp"
 #include "rails.hpp"
+#include "station.hpp"
 
 namespace loopline
 {
@@ -24,8 +25,9 @@ namespace loopline
         // this saves how much time has passed
         sf::Time elapsed = clock.restart();
 
-
         Rails rails;
+
+        std::vector<Station> stations;
 
         public:
         LoopLine();

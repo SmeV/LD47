@@ -11,6 +11,7 @@ add_executable(LD47
     train.cpp
     rails.cpp
     game.cpp
+    station.cpp
 )
 
 target_link_libraries(LD47 sfml-window sfml-graphics sfml-audio sfml-network)

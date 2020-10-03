@@ -2,10 +2,15 @@
 
 namespace loopline
 {
-
     LoopLine::LoopLine()
         : window(sf::VideoMode{800, 600}, "My window"), rails({{10.f, 10.f}, {200.f,400.f},{400.f,100.f},{600.f, 300.f},{790.f, 10.f}, {10.f, 590.f}})
     {
+        Station s1(sf::Vector2f(200.f,400.f), 100.f);
+        Station s2(sf::Vector2f(600.f,300.f), 100.f);
+        Station s3(sf::Vector2f(10.f,590.f), 100.f);
+
+        stations = std::vector<Station> ({s1, s2, s3});
+
         initializeGame();
     }
     LoopLine::~LoopLine()
@@ -97,6 +102,11 @@ namespace loopline
         window.clear(sf::Color::Black);
 
         rails.draw(window);
+
+        for(unsigned int i = 0; i < stations.size(); i++)
+        {
+            stations[i].draw(window);
+        }
 
         window.display();
     }
