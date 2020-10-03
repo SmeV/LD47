@@ -4,7 +4,7 @@ namespace loopline
 {
 
     LoopLine::LoopLine()
-        : window(sf::VideoMode{800, 600}, "My window"), rails({{10.f, 10.f}, {790.f, 10.f}, {10.f, 590.f}})
+        : window(sf::VideoMode{800, 600}, "My window"), rails({{10.f, 10.f}, {200.f,400.f},{400.f,100.f},{600.f, 300.f},{790.f, 10.f}, {10.f, 590.f}})
     {
         initializeGame();
     }

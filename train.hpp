@@ -18,6 +18,7 @@ namespace loopline
 
         float railPosition;
 
+        float length;
         sf::Sprite sprite;
         sf::Texture slimeTexture;
 
