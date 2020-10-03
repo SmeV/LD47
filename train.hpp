@@ -14,6 +14,7 @@ namespace loopline
         friend class Rails;
         float speed;
         float acceleration;
+        float maxSpeed = 500.0f;
 
         float railPosition;
 
