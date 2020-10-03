@@ -7,6 +7,7 @@
 #include "inputManager.hpp"
 #include "rails.hpp"
 #include "station.hpp"
+#include "passenger.hpp"
 
 namespace loopline
 {
@@ -31,6 +32,9 @@ namespace loopline
 
         std::vector<Station> stations;
 
+        std::vector<Passenger> passengers;
+        int maxPassengers = 300;
+
         public:
         LoopLine();
         ~LoopLine();
@@ -39,6 +43,9 @@ namespace loopline
 
         void start();
         void gameLoop();
+
+        void spawnPassengers();
+        void updatePassengers(int currentStation);
 
         virtual void handleEvents();
         virtual void update(sf::Time const &deltaTime);

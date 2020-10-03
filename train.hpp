@@ -13,17 +13,18 @@ namespace loopline
     {
     private:
         friend class Rails;
-        float speed;
         float acceleration;
         float maxSpeed = 500.0f;
 
-        float railPosition;
 
         float length;
 
     public:
         Train();
         ~Train();
+
+        float speed;
+        float railPosition;
 
         virtual void update(sf::Time const &deltaTime);
         virtual void fixedUpdate(sf::Time const &deltaTime);
