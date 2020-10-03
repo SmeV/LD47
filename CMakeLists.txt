@@ -10,6 +10,7 @@ add_executable(LD47
     inputManager.cpp
     train.cpp
     rails.cpp
+    game.cpp
 )
 
 target_link_libraries(LD47 sfml-window sfml-graphics sfml-audio sfml-network)
