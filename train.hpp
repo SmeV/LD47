@@ -11,10 +11,11 @@ namespace loopline
     class Train : public Updatable
     {
     private:
+        friend class Rails;
         float speed;
         float acceleration;
 
-        sf::Vector2f position;
+        float railPosition;
 
         sf::Sprite sprite;
         sf::Texture slimeTexture;
@@ -23,9 +24,11 @@ namespace loopline
         Train();
         ~Train();
 
+        void setWorldposition(sf::Vector2f const &worldPos);
+
         virtual void update(sf::Time const &deltaTime);
         virtual void fixedUpdate(sf::Time const &deltaTime);
-        virtual void draw(sf::RenderWindow &window);
+        virtual void draw(sf::RenderWindow &window) const;
 
         std::shared_ptr<LambdaCommand> accel, deaccel, chime, noaccel;
     };
