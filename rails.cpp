@@ -1,5 +1,8 @@
 #include "rails.hpp"
+#include "helper.hpp"
+#include <iostream>
 
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <cassert>
 
@@ -32,21 +35,29 @@ namespace loopline
     {
         assert(railPosition <= railLengths[railLengths.size()-1]);
 
+        int previouspreviousControl = railLengths.size()-1;
         int previousControl = 0;
         int nextControl = 1;
+        int nextnextControl = 2;
         float railPositionDiscard = 0.f;
         while(railPosition > railLengths[previousControl]) 
         {
             railPositionDiscard = railLengths[previousControl];
 
-            previousControl++; 
-            nextControl++;
+            previousControl = (previousControl + 1) % railLengths.size(); 
+            nextControl = (nextControl + 1) % railLengths.size();
+            previouspreviousControl = (previouspreviousControl + 1) % railLengths.size();
+            nextnextControl = (nextnextControl + 1) % railLengths.size();
         }
 
-        if(nextControl == railLengths.size()) nextControl = 0;
         float multiplier = (railPosition - railPositionDiscard) / (railLengths[previousControl] - railPositionDiscard);
 
-        return multiplier * controlPoints[nextControl] + (1.f - multiplier) * controlPoints[previousControl];
+        return CubicInterpolate(controlPoints[previouspreviousControl], controlPoints[previousControl], controlPoints[nextControl],controlPoints[nextnextControl],multiplier);
+
+        //return multiplier * controlPoints[nextControl] + (1.f - multiplier) * controlPoints[previousControl];
+        float mu2 = (1.f - cosf(multiplier * M_PI))/2.f;
+        
+        return (controlPoints[previousControl]*(1.f-mu2)+controlPoints[nextControl]*mu2);
     }
 
     void Rails::update(sf::Time const &deltaTime)
@@ -54,7 +65,21 @@ namespace loopline
         train.update(deltaTime);
         train.railPosition = fmod(train.railPosition, railLengths[railLengths.size()-1]);
 
-        train.setWorldposition(getWorldPosition(train.railPosition));
+
+        auto firstTrainPoint = getWorldPosition(train.railPosition);
+        auto secondTrainPoint = getWorldPosition(train.railPosition - train.length);
+        auto diff = firstTrainPoint - secondTrainPoint;
+        float length = sqrtf(powf(diff.x, 2.0f) + powf(diff.y, 2.0f));
+        diff /= length;
+        float rotationAngle = atan2f(diff.y, diff.x);
+
+        float rotationAngleDeg = rotationAngle / M_PI * 180.f;
+        
+        if(rotationAngleDeg > 90.f || rotationAngleDeg < -90.f) train.sprite.setScale({1.f,-1.f});
+        else train.sprite.setScale({1.f,1.f});
+            
+        train.setWorldposition(firstTrainPoint);
+        train.sprite.setRotation(rotationAngleDeg);
     }
 
     void Rails::fixedUpdate(sf::Time const &deltaTime)

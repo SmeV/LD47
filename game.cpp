@@ -4,7 +4,7 @@ namespace loopline
 {
 
     LoopLine::LoopLine()
-        : window(sf::VideoMode{800, 600}, "My window"), rails({{10.f, 10.f}, {790.f, 10.f}, {10.f, 590.f}})
+        : window(sf::VideoMode{800, 600}, "My window"), rails({{10.f, 10.f}, {200.f,400.f},{400.f,100.f},{600.f, 300.f},{790.f, 10.f}, {10.f, 590.f}})
     {
         initializeGame();
     }
@@ -15,7 +15,7 @@ namespace loopline
     void LoopLine::initializeGame()
     {
         textureManager.loadTexture("slime_monster_24x24/slime_monster_spritesheet.png", "slime_spritesheet");
-        rails.train.setSprite(textureManager.getTexture("slime_spritesheet"), sf::IntRect{0, 48, 72, 24});
+        rails.train.setSprite(textureManager.getTexture("slime_spritesheet"), sf::IntRect{0, 48, 72, 24}, {60.f, 12.f});
 
         inputManager.addEventCommand(rails.train.accel, sf::Keyboard::W);
         inputManager.addEventCommand(rails.train.deaccel, sf::Keyboard::S);

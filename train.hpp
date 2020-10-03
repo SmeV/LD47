@@ -18,6 +18,7 @@ namespace loopline
 
         float railPosition;
 
+        float length;
         sf::Sprite sprite;
 
     public:
@@ -25,7 +26,7 @@ namespace loopline
         ~Train();
 
         void setWorldposition(sf::Vector2f const &worldPos);
-        void setSprite(sf::Texture const& tex, sf::IntRect const& rect);
+        void setSprite(sf::Texture const& tex, sf::IntRect const& rect, sf::Vector2f const &origin = {0.f, 0.f});
 
         virtual void update(sf::Time const &deltaTime);
         virtual void fixedUpdate(sf::Time const &deltaTime);

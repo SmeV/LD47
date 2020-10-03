@@ -5,7 +5,7 @@
 namespace loopline
 {
     Train::Train()
-        : railPosition(0.f), speed(0.f), acceleration(0.f)
+        : railPosition(0.f), speed(0.f), acceleration(0.f), length(48.f)
     {
         accel = std::make_shared<LambdaCommand>([this]() { this->acceleration = 50.f;});
         deaccel = std::make_shared<LambdaCommand>([this]() { this->acceleration -= 50.f;});
@@ -22,10 +22,11 @@ namespace loopline
         sprite.setPosition(worldPos);
     }
 
-    void Train::setSprite(sf::Texture const& tex, sf::IntRect const& rect)
+    void Train::setSprite(sf::Texture const& tex, sf::IntRect const& rect, sf::Vector2f const& origin)
     {
         sprite.setTexture(tex);
         sprite.setTextureRect(rect);
+        sprite.setOrigin(origin);
     }
 
     void Train::update(sf::Time const &deltaTime)
