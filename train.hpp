@@ -19,13 +19,13 @@ namespace loopline
         float railPosition;
 
         sf::Sprite sprite;
-        sf::Texture slimeTexture;
 
     public:
         Train();
         ~Train();
 
         void setWorldposition(sf::Vector2f const &worldPos);
+        void setSprite(sf::Texture const& tex, sf::IntRect const& rect);
 
         virtual void update(sf::Time const &deltaTime);
         virtual void fixedUpdate(sf::Time const &deltaTime);

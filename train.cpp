@@ -7,13 +7,6 @@ namespace loopline
     Train::Train()
         : railPosition(0.f), speed(0.f), acceleration(0.f)
     {
-        if (!slimeTexture.loadFromFile("slime_monster_24x24/slime_monster_spritesheet.png"))
-        {
-            // error...
-        }
-        sprite.setTexture(slimeTexture);
-        sprite.setTextureRect(sf::IntRect{0, 48, 24, 24});
-
         accel = std::make_shared<LambdaCommand>([this]() { this->acceleration = 50.f;});
         deaccel = std::make_shared<LambdaCommand>([this]() { this->acceleration -= 50.f;});
         noaccel = std::make_shared<LambdaCommand>([this]() { this->acceleration = -25.f;});
@@ -27,6 +20,12 @@ namespace loopline
     void Train::setWorldposition(sf::Vector2f const &worldPos)
     {
         sprite.setPosition(worldPos);
+    }
+
+    void Train::setSprite(sf::Texture const& tex, sf::IntRect const& rect)
+    {
+        sprite.setTexture(tex);
+        sprite.setTextureRect(rect);
     }
 
     void Train::update(sf::Time const &deltaTime)
