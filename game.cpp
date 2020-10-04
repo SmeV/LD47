@@ -37,6 +37,19 @@ namespace loopline
 
         textureManager.loadTexture("assets/images/train.png", "train_spritesheet");
         textureManager.loadTexture("assets/images/station1.png", "station1_spritesheet");
+        textureManager.loadTexture("assets/images/bg.png", "worldmap");
+
+        worldMap.setTexture(textureManager.getTexture("worldmap"));
+        worldMap.setOrigin(0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)});
+        worldMap.setPosition(sf::Vector2f{0.f, 0.f});
+
+
+        for(auto& worldControl : worldControlPoints)
+        {
+            worldControl -= 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)};
+        }
+        rails.setControlPoints(worldControlPoints);
+
         rails.train.setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
 
         for(auto& station : stations)
@@ -56,6 +69,7 @@ namespace loopline
             if(state == GAME) state = PAUSE;
             else if(state == PAUSE) state = GAME;
         }), sf::Keyboard::P);
+        inputManager.addEventCommand(std::make_shared<loopline::LambdaCommand>([this]() { debug = !debug; }), sf::Keyboard::F1);
 
         textFont.loadFromFile("assets/COOPBL.TTF");
     }
@@ -181,12 +195,15 @@ namespace loopline
         case PAUSE:
             speedZoom = 1.0f + rails.train.speed / rails.train.maxSpeed * (maxSpeedZoom - 1.0f);
             camera.setSize(speedZoom * sf::Vector2f{static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y)});
-            //camera.zoom(speedZoom);
+
+            camera.setCenter(rails.getWorldPosition(rails.train.railPosition));
 
             window.setView(camera);
 
             // clear the window with black color
             window.clear(sf::Color::Black);
+
+            window.draw(worldMap);
 
             for (auto &station : stations)
             {
@@ -195,6 +212,7 @@ namespace loopline
 
             rails.draw(window);
 
+            if(debug) drawDebug();
             drawUI();
 
             if (state == PAUSE)
@@ -252,5 +270,37 @@ namespace loopline
         window.draw(goldText);
 
         window.setView(camera);
+    }
+
+    void LoopLine::drawDebug()
+    {
+        sf::CircleShape stationDot(25.f);
+        stationDot.setFillColor(sf::Color::Red);
+        stationDot.setOrigin(12.5f, 12.5f);
+
+        sf::CircleShape controlDot(15.f);
+        controlDot.setFillColor(sf::Color::Blue);
+        controlDot.setOrigin(7.5f, 7.5f);
+
+        sf::CircleShape railDot(10.f);
+        railDot.setFillColor(sf::Color::White);
+        railDot.setOrigin(5.f, 5.f);
+
+        float railLength = rails.railLengths[rails.railLengths.size() - 1];
+        for(float i = 0.0f; i < railLength; i += 2.f)
+        {
+            railDot.setPosition(rails.getWorldPosition(i));
+            window.draw(railDot);
+        }
+        for(int i = 0; i < stations.size(); ++i)
+        {
+            stationDot.setPosition(stations[i].position);
+            window.draw(stationDot);
+        }
+        for(int i = 0; i < rails.controlPoints.size(); ++i)
+        {
+            controlDot.setPosition(rails.controlPoints[i]);
+            window.draw(controlDot);
+        }
     }
 } // namespace loopline
