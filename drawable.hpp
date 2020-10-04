@@ -9,7 +9,6 @@ namespace loopline
     class Drawable
     {
     private:
-        sf::Sprite sprite;
 
     public:
         Drawable();
@@ -21,6 +20,10 @@ namespace loopline
         virtual void setSpriteScale(sf::Vector2f const& scale);
 
         virtual void draw(sf::RenderWindow &window) const;
+        virtual void drawInfo(sf::RenderWindow &window, sf::Font const &font) const;
+        virtual void drawUI(sf::RenderWindow &window, sf::Font const &font) const;
+
+        sf::Sprite sprite;
     };
 } // namespace loopline
 

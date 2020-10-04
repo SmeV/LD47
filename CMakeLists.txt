@@ -15,6 +15,7 @@ add_executable(LD47
     game.cpp
     station.cpp
     passenger.cpp
+    obstacle.cpp
     helper.cpp
 )
 

@@ -37,4 +37,12 @@ namespace loopline
         window.draw(this->sprite);
     }
 
+    void Drawable::drawInfo(sf::RenderWindow &window, sf::Font const &font) const
+    {
+    }
+
+    void Drawable::drawUI(sf::RenderWindow &window, sf::Font const &font) const
+    {
+    }
+
 } // namespace loopline
