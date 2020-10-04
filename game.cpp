@@ -18,6 +18,7 @@ namespace loopline
         stations = std::vector<Station> ({s1, s2, s3});
 
         camera = window.getView();
+        uiView = window.getView();
         window.setView(camera);
         greyPause.setSize(maxSpeedZoom * sf::Vector2f{static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y)});
         greyPause.setOrigin(0.5f * greyPause.getSize());
@@ -34,7 +35,7 @@ namespace loopline
     {
         srand (time(NULL));
 
-        textureManager.loadTexture("slime_monster_24x24/slime_monster_spritesheet.png", "slime_spritesheet");
+        textureManager.loadTexture("assets/slime_monster_24x24/slime_monster_spritesheet.png", "slime_spritesheet");
         rails.train.setSprite(textureManager.getTexture("slime_spritesheet"), sf::IntRect{0, 48, 72, 24}, {60.f, 12.f});
 
         for(auto& station : stations)
@@ -54,6 +55,8 @@ namespace loopline
             if(state == GAME) state = PAUSE;
             else if(state == PAUSE) state = GAME;
         }), sf::Keyboard::P);
+
+        textFont.loadFromFile("assets/COOPBL.TTF");
     }
 
     void LoopLine::start()
@@ -94,6 +97,7 @@ namespace loopline
     void LoopLine::resizeWindow()
     {
         camera.setSize({static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y)});
+        uiView.setSize({static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y)});
         window.setView(camera);
         greyPause.setSize(maxSpeedZoom * sf::Vector2f{static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y)});
     }
@@ -190,6 +194,8 @@ namespace loopline
 
             rails.draw(window);
 
+            drawUI();
+
             if (state == PAUSE)
             {
                 window.draw(greyPause);
@@ -230,5 +236,20 @@ namespace loopline
 
         passengers.erase(std::remove_if(passengers.begin(), passengers.end(), [] (Passenger p) {return p.killPassenger;}));
 
+    }
+
+    void LoopLine::drawUI()
+    {
+        window.setView(uiView);
+        std::string text(std::to_string(gold) + " Gold");
+        sf::Text goldText(text, textFont);
+        goldText.setOrigin(goldText.findCharacterPos(text.size()-1));
+        sf::Vector2f topRight = uiView.getCenter() + 0.5f * sf::Vector2f{uiView.getSize().x, -uiView.getSize().y};
+        goldText.setPosition(topRight + sf::Vector2f{-50.f, 50.f - goldText.getCharacterSize()});
+        goldText.setFillColor(sf::Color::Red);
+
+        window.draw(goldText);
+
+        window.setView(camera);
     }
 } // namespace loopline

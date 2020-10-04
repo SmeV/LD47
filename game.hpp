@@ -32,12 +32,15 @@ namespace loopline
         sf::Time elapsed = clock.restart();
 
 
+        int gold = 0;
+        sf::Font textFont;
         std::vector<Station> stations;
 
         std::vector<Passenger> passengers;
         int maxPassengers = 300;
 
         sf::View camera;
+        sf::View uiView;
         float maxSpeedZoom = 1.25;
         Rails rails;
 
@@ -60,6 +63,8 @@ namespace loopline
         virtual void update(sf::Time const &deltaTime);
         virtual void fixedUpdate(sf::Time const &deltaTime);
         virtual void render();
+
+        void drawUI();
     };
 }
 
