@@ -35,12 +35,13 @@ namespace loopline
     {
         srand (time(NULL));
 
-        textureManager.loadTexture("assets/slime_monster_24x24/slime_monster_spritesheet.png", "slime_spritesheet");
-        rails.train.setSprite(textureManager.getTexture("slime_spritesheet"), sf::IntRect{0, 48, 72, 24}, {60.f, 12.f});
+        textureManager.loadTexture("assets/images/train.png", "train_spritesheet");
+        textureManager.loadTexture("assets/images/station1.png", "station1_spritesheet");
+        rails.train.setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
 
         for(auto& station : stations)
         {
-            station.setSprite(textureManager.getTexture("slime_spritesheet"), sf::IntRect{24,48,72,24}, {60.f,12.f});
+            station.setSprite(textureManager.getTexture("station1_spritesheet"), sf::IntRect{0, 0, 150, 107});
             station.setSpritePosition(station.position);
         }
 
