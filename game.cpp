@@ -37,6 +37,19 @@ namespace loopline
 
         textureManager.loadTexture("assets/images/train.png", "train_spritesheet");
         textureManager.loadTexture("assets/images/station1.png", "station1_spritesheet");
+        textureManager.loadTexture("assets/images/bg.png", "worldmap");
+
+        worldMap.setTexture(textureManager.getTexture("worldmap"));
+        worldMap.setOrigin(0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)});
+        worldMap.setPosition(sf::Vector2f{0.f, 0.f});
+
+
+        for(auto& worldControl : worldControlPoints)
+        {
+            worldControl -= 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)};
+        }
+        rails.setControlPoints(worldControlPoints);
+
         rails.train.setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
 
         for(auto& station : stations)
@@ -190,6 +203,8 @@ namespace loopline
             // clear the window with black color
             window.clear(sf::Color::Black);
 
+            window.draw(worldMap);
+
             for (auto &station : stations)
             {
                 station.draw(window);
@@ -272,7 +287,7 @@ namespace loopline
         railDot.setOrigin(5.f, 5.f);
 
         float railLength = rails.railLengths[rails.railLengths.size() - 1];
-        for(float i = 0.0f; i < railLength; i += 0.25f)
+        for(float i = 0.0f; i < railLength; i += 2.f)
         {
             railDot.setPosition(rails.getWorldPosition(i));
             window.draw(railDot);

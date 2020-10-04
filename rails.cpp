@@ -8,9 +8,20 @@
 
 namespace loopline
 {
-    Rails::Rails(std::vector<sf::Vector2f> pts)
-        : controlPoints(pts)
+    Rails::Rails(std::vector<sf::Vector2f> const &pts)
     {
+        setControlPoints(pts);
+    }
+
+    Rails::~Rails()
+    {
+    }
+
+    void Rails::setControlPoints(std::vector<sf::Vector2f> const &pts)
+    {
+        controlPoints = pts;
+        railLengths.empty();
+
         railLengths.resize(controlPoints.size());
         auto controlDiff = controlPoints[0] - controlPoints[controlPoints.size() - 1];
         float railLength = 0.f;
@@ -24,11 +35,6 @@ namespace loopline
         controlDiff = controlPoints[0] - controlPoints[controlPoints.size() - 1];
         railLength += sqrtf(powf(controlDiff.x, 2.0f) + powf(controlDiff.y, 2.0f));
         railLengths[controlPoints.size()-1] = railLength;
-
-    }
-
-    Rails::~Rails()
-    {
     }
 
     sf::Vector2f Rails::getWorldPosition(float railPosition) const
