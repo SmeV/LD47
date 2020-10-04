@@ -11,6 +11,7 @@ add_executable(LD47
     inputManager.cpp
     drawable.cpp
     train.cpp
+    trainWagon.cpp
     rails.cpp
     game.cpp
     station.cpp

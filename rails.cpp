@@ -94,6 +94,32 @@ namespace loopline
 
             train.setSpritePosition(firstTrainPoint);
             train.setSpriteRotation(rotationAngleDeg);
+
+            float wagonRailPosition = train.railPosition - train.length;
+            for(auto& wagon : train.wagons)
+            {
+                if(wagonRailPosition < 0.f) wagonRailPosition += railLengths[railLengths.size() - 1];
+                wagonRailPosition = fmod(wagonRailPosition, railLengths[railLengths.size() - 1]);
+
+                auto firstTrainPoint = getWorldPosition(wagonRailPosition);
+                auto secondTrainPoint = getWorldPosition(wagonRailPosition - train.length);
+                auto diff = firstTrainPoint - secondTrainPoint;
+                float length = sqrtf(powf(diff.x, 2.0f) + powf(diff.y, 2.0f));
+                diff /= length;
+                float rotationAngle = atan2f(diff.y, diff.x);
+
+                float rotationAngleDeg = rotationAngle / M_PI * 180.f;
+
+                if (rotationAngleDeg > 90.f || rotationAngleDeg < -90.f)
+                    wagon.setSpriteScale({1.f, -1.f});
+                else
+                    wagon.setSpriteScale({1.f, 1.f});
+
+                wagon.setSpritePosition(firstTrainPoint);
+                wagon.setSpriteRotation(rotationAngleDeg);
+
+                wagonRailPosition = wagonRailPosition - wagon.length;
+            }
         }
     }
 

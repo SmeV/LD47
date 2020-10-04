@@ -7,6 +7,8 @@
 #include "updatable.hpp"
 #include "drawable.hpp"
 
+#include "trainWagon.hpp"
+
 namespace loopline
 {
     class Train : public Updatable, public Drawable
@@ -15,6 +17,8 @@ namespace loopline
         friend class Rails;
         float acceleration;
         float length;
+
+        std::vector<TrainWagon> wagons;
 
     public:
         class AccelCommand : public Command
@@ -31,13 +35,16 @@ namespace loopline
         };
         enum TrainState{DRIVING, STOPPED};
 
-        Train();
+        Train(float railPosition = 0.f, float speed = 0.f, float acceleration = 0.f, float length = 120.f);
         ~Train();
         Train(Train const &train);
+
+        void addWagon(TrainWagon const &wagon);
 
         virtual void update(sf::Time const &deltaTime);
         virtual void fixedUpdate(sf::Time const &deltaTime);
 
+        virtual void draw(sf::RenderWindow &window) const override;
         virtual void drawUI(sf::RenderWindow &window, sf::Font const &font);
 
         std::shared_ptr<AccelCommand> accel, deaccel, chime, noaccel;

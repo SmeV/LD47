@@ -4,12 +4,12 @@
 
 namespace loopline
 {
-    Train::Train()
-        : railPosition(0.f), speed(00.f), acceleration(0.f), length(48.f)
+    Train::Train(float railPosition, float speed, float acceleration, float length)
+        : railPosition(railPosition), speed(speed), acceleration(acceleration), length(length)
     {
-        accel = std::make_shared<AccelCommand>(this, 50.f);
-        deaccel = std::make_shared<AccelCommand>(this, -50.f);
-        noaccel = std::make_shared<AccelCommand>(this, -25.f);
+        accel = std::make_shared<AccelCommand>(this, 100.f);
+        deaccel = std::make_shared<AccelCommand>(this, -200.f);
+        noaccel = std::make_shared<AccelCommand>(this, -125.f);
     }
 
     Train::~Train()
@@ -20,13 +20,24 @@ namespace loopline
     Train::Train(Train const &train)
         : railPosition(train.railPosition), speed(train.speed), acceleration(train.acceleration), length(train.length)
     {
-        accel = std::make_shared<AccelCommand>(this, 50.f);
-        deaccel = std::make_shared<AccelCommand>(this, -50.f);
-        noaccel = std::make_shared<AccelCommand>(this, -25.f);
+        accel = std::make_shared<AccelCommand>(this, 100.f);
+        deaccel = std::make_shared<AccelCommand>(this, -200.f);
+        noaccel = std::make_shared<AccelCommand>(this, -125.f);
+    }
+
+    void Train::addWagon(TrainWagon const &wagon)
+    {
+        wagons.push_back(wagon);
+
+        maxCapacity += 20;
     }
 
     void Train::update(sf::Time const &deltaTime)
     {
+        for(auto &wagon : wagons)
+        {
+            wagon.update(deltaTime);
+        }
     }
 
     void Train::fixedUpdate(sf::Time const &deltaTime)
@@ -40,7 +51,21 @@ namespace loopline
 
         if (speed < 0.0001f) state = STOPPED;
         else state = DRIVING;
+
+        for(auto &wagon : wagons)
+        {
+            wagon.fixedUpdate(deltaTime);
+        }
     } 
+
+    void Train::draw(sf::RenderWindow &window) const
+    {
+        for(auto &wagon : wagons)
+        {
+            wagon.draw(window);
+        }
+        Drawable::draw(window);
+    }
 
     void Train::drawUI(sf::RenderWindow &window, sf::Font const &font)
     {

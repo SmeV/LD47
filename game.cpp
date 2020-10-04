@@ -35,9 +35,18 @@ namespace loopline
     {
         srand (time(NULL));
 
+        obstacleRails.push_back(Rails{{{-3999.f, 0.f},{4001.f, 0.f}}, Rails::LINEAR});
+        obstacleRails[0].trains.resize(1);
+        obstacleRails[0].trains[0].maxSpeed = 1000.f;
+        obstacleRails[0].trains[0].speed = 1000.f;
+
+
         textureManager.loadTexture("assets/images/train.png", "train_spritesheet");
         textureManager.loadTexture("assets/images/station1.png", "station1_spritesheet");
         textureManager.loadTexture("assets/images/bg.png", "worldmap");
+        textureManager.loadTexture("assets/images/cars.png", "car_spritesheet");
+
+        obstacleRails[0].trains[0].setSprite(textureManager.getTexture("car_spritesheet"), sf::IntRect{0, 0, 63, 37}, sf::Vector2f{31.5f, 23.5f});
 
         worldMap.setTexture(textureManager.getTexture("worldmap"));
         worldMap.setOrigin(0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)});
@@ -52,6 +61,8 @@ namespace loopline
         rails.trains.resize(1);
 
         rails.trains[0].setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
+
+        copyWagon.setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
 
         for(auto& station : stations)
         {
@@ -116,7 +127,9 @@ namespace loopline
         camera.setSize({static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y)});
         uiView.setSize({static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y)});
         window.setView(camera);
-        greyPause.setSize(maxSpeedZoom * sf::Vector2f{static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y)});
+        greyPause.setSize(uiView.getSize());
+        greyPause.setOrigin(0.5f * greyPause.getSize());
+        greyPause.setPosition(uiView.getCenter());
     }
 
     void LoopLine::handleEvents()
@@ -151,6 +164,10 @@ namespace loopline
         case GAME:
             inputManager.update(deltaTime);
             rails.update(deltaTime);
+            for(auto& oRails : obstacleRails)
+            {
+                oRails.update(deltaTime);
+            }
             break;
         case PAUSE:
             break;
@@ -166,9 +183,14 @@ namespace loopline
         case GAME:
             inputManager.fixedUpdate(deltaTime);
             rails.fixedUpdate(deltaTime);
-            spawnPassengers(deltaTime);
+            for(auto& oRails : obstacleRails)
+            {
+                oRails.fixedUpdate(deltaTime);
+            }
 
+            spawnPassengers(deltaTime);
             updatePassengers(deltaTime);
+            checkCrash(deltaTime);
 
             break;
         case PAUSE:
@@ -203,6 +225,10 @@ namespace loopline
                 station.draw(window);
             }
 
+            for(auto& oRails : obstacleRails)
+            {
+                oRails.draw(window);
+            }
             rails.draw(window);
 
             drawInfo();
@@ -226,9 +252,9 @@ namespace loopline
     {
         if(passengers.size() < maxPassengers && rand() % 1000 < (1000*deltaTime.asSeconds()))
         {
-            // TODO: die sollen nicht gleich sein alter
             int in = rand() % stations.size();
-            int out = rand() % stations.size();
+            int inPlus = 1 + (rand() % (stations.size()-1));
+            int out = (in+inPlus) % stations.size();
 
             if(stations[in].waitingPassengers < stations[in].maxCapacity)
             {
@@ -304,6 +330,9 @@ namespace loopline
     void LoopLine::crash(Train &crashedInto)
     {
         // TODO: CRASH!!!
+        rails.trains[0].addWagon(copyWagon);
+        crashedInto.setSprite(textureManager.getTexture("car_spritesheet"),  sf::IntRect{63, 0, 63, 37}, sf::Vector2f{31.5f, 23.5f});
+        //state = PAUSE;
     }
 
     void LoopLine::drawUI()
@@ -349,6 +378,15 @@ namespace loopline
         {
             railDot.setPosition(rails.getWorldPosition(i));
             window.draw(railDot);
+        }
+        for(auto& oRails : obstacleRails)
+        {
+            railLength = oRails.railLengths[oRails.railLengths.size() - 1];
+            for (float i = 0.0f; i < railLength; i += 2.f)
+            {
+                railDot.setPosition(oRails.getWorldPosition(i));
+                window.draw(railDot);
+            }
         }
         for(int i = 0; i < stations.size(); ++i)
         {
