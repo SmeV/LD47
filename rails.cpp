@@ -33,7 +33,7 @@ namespace loopline
 
     sf::Vector2f Rails::getWorldPosition(float railPosition) const
     {
-        assert(railPosition <= railLengths[railLengths.size()-1]);
+        railPosition = fmod(railPosition, railLengths[railLengths.size() - 1]);
 
         int previouspreviousControl = railLengths.size()-1;
         int previousControl = 0;

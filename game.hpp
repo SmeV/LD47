@@ -44,6 +44,8 @@ namespace loopline
         float maxSpeedZoom = 1.25;
         Rails rails;
 
+        bool debug = false;
+
         sf::RectangleShape greyPause;
 
         public:
@@ -65,6 +67,7 @@ namespace loopline
         virtual void render();
 
         void drawUI();
+        void drawDebug();
     };
 }
 

@@ -12,8 +12,6 @@ namespace loopline
     class Rails : public Updatable
     {
         private:
-        std::vector<sf::Vector2f> controlPoints;
-        std::vector<float> railLengths;
 
         public:
         Rails(std::vector<sf::Vector2f> pts = {});
@@ -25,6 +23,8 @@ namespace loopline
         virtual void fixedUpdate(sf::Time const &deltaTime);
         virtual void draw(sf::RenderWindow& window) const;
 
+        std::vector<sf::Vector2f> controlPoints;
+        std::vector<float> railLengths;
         Train train;
     };
 } // namespace loopline
