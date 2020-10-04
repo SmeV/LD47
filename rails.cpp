@@ -8,7 +8,8 @@
 
 namespace loopline
 {
-    Rails::Rails(std::vector<sf::Vector2f> const &pts)
+    Rails::Rails(std::vector<sf::Vector2f> const &pts, Pathfinding path)
+        : path(path)
     {
         setControlPoints(pts);
     }
@@ -39,63 +40,103 @@ namespace loopline
 
     sf::Vector2f Rails::getWorldPosition(float railPosition) const
     {
+        sf::Vector2f worldPos;
         railPosition = fmod(railPosition, railLengths[railLengths.size() - 1]);
-
-        int previouspreviousControl = railLengths.size()-1;
+        int previouspreviousControl = railLengths.size() - 1;
         int previousControl = 0;
         int nextControl = 1;
         int nextnextControl = 2;
         float railPositionDiscard = 0.f;
-        while(railPosition > railLengths[previousControl]) 
+        while (railPosition > railLengths[previousControl])
         {
             railPositionDiscard = railLengths[previousControl];
 
-            previousControl = (previousControl + 1) % railLengths.size(); 
+            previousControl = (previousControl + 1) % railLengths.size();
             nextControl = (nextControl + 1) % railLengths.size();
             previouspreviousControl = (previouspreviousControl + 1) % railLengths.size();
             nextnextControl = (nextnextControl + 1) % railLengths.size();
         }
 
         float multiplier = (railPosition - railPositionDiscard) / (railLengths[previousControl] - railPositionDiscard);
+        switch (path)
+        {
+        case CUBIC:
+            worldPos = CubicInterpolate(controlPoints[previouspreviousControl], controlPoints[previousControl], controlPoints[nextControl], controlPoints[nextnextControl], multiplier);
+            break;
+        case LINEAR:
+            worldPos = multiplier * controlPoints[nextControl] + (1.f - multiplier) * controlPoints[previousControl];
+            break;
+        }
 
-        return CubicInterpolate(controlPoints[previouspreviousControl], controlPoints[previousControl], controlPoints[nextControl],controlPoints[nextnextControl],multiplier);
-
-        //return multiplier * controlPoints[nextControl] + (1.f - multiplier) * controlPoints[previousControl];
-        float mu2 = (1.f - cosf(multiplier * M_PI))/2.f;
-        
-        return (controlPoints[previousControl]*(1.f-mu2)+controlPoints[nextControl]*mu2);
+        return worldPos;
     }
 
     void Rails::update(sf::Time const &deltaTime)
     {
-        train.update(deltaTime);
-        train.railPosition = fmod(train.railPosition, railLengths[railLengths.size()-1]);
+        for(auto& train : trains)
+        {
+            train.update(deltaTime);
+            train.railPosition = fmod(train.railPosition, railLengths[railLengths.size() - 1]);
 
+            auto firstTrainPoint = getWorldPosition(train.railPosition);
+            auto secondTrainPoint = getWorldPosition(train.railPosition - train.length);
+            auto diff = firstTrainPoint - secondTrainPoint;
+            float length = sqrtf(powf(diff.x, 2.0f) + powf(diff.y, 2.0f));
+            diff /= length;
+            float rotationAngle = atan2f(diff.y, diff.x);
 
-        auto firstTrainPoint = getWorldPosition(train.railPosition);
-        auto secondTrainPoint = getWorldPosition(train.railPosition - train.length);
-        auto diff = firstTrainPoint - secondTrainPoint;
-        float length = sqrtf(powf(diff.x, 2.0f) + powf(diff.y, 2.0f));
-        diff /= length;
-        float rotationAngle = atan2f(diff.y, diff.x);
+            float rotationAngleDeg = rotationAngle / M_PI * 180.f;
 
-        float rotationAngleDeg = rotationAngle / M_PI * 180.f;
-        
-        if(rotationAngleDeg > 90.f || rotationAngleDeg < -90.f) train.setSpriteScale({1.f,-1.f});
-        else train.setSpriteScale({1.f,1.f});
-            
-        train.setSpritePosition(firstTrainPoint);
-        train.setSpriteRotation(rotationAngleDeg);
+            if (rotationAngleDeg > 90.f || rotationAngleDeg < -90.f)
+                train.setSpriteScale({1.f, -1.f});
+            else
+                train.setSpriteScale({1.f, 1.f});
+
+            train.setSpritePosition(firstTrainPoint);
+            train.setSpriteRotation(rotationAngleDeg);
+
+            float wagonRailPosition = train.railPosition - train.length;
+            for(auto& wagon : train.wagons)
+            {
+                if(wagonRailPosition < 0.f) wagonRailPosition += railLengths[railLengths.size() - 1];
+                wagonRailPosition = fmod(wagonRailPosition, railLengths[railLengths.size() - 1]);
+
+                auto firstTrainPoint = getWorldPosition(wagonRailPosition);
+                auto secondTrainPoint = getWorldPosition(wagonRailPosition - train.length);
+                auto diff = firstTrainPoint - secondTrainPoint;
+                float length = sqrtf(powf(diff.x, 2.0f) + powf(diff.y, 2.0f));
+                diff /= length;
+                float rotationAngle = atan2f(diff.y, diff.x);
+
+                float rotationAngleDeg = rotationAngle / M_PI * 180.f;
+
+                if (rotationAngleDeg > 90.f || rotationAngleDeg < -90.f)
+                    wagon.setSpriteScale({1.f, -1.f});
+                else
+                    wagon.setSpriteScale({1.f, 1.f});
+
+                wagon.setSpritePosition(firstTrainPoint);
+                wagon.setSpriteRotation(rotationAngleDeg);
+
+                wagonRailPosition = wagonRailPosition - wagon.length;
+            }
+        }
     }
 
     void Rails::fixedUpdate(sf::Time const &deltaTime)
     {
-        train.fixedUpdate(deltaTime);
+        for(auto& train : trains)
+        {
+            train.fixedUpdate(deltaTime);
+        }
     }
 
     void Rails::draw(sf::RenderWindow &window) const
     {
-        train.draw(window);
+        for(auto& train : trains)
+        {
+            train.draw(window);
+        }
     }
 
 } // namespace loopline

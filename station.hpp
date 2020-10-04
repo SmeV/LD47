@@ -17,6 +17,11 @@ namespace loopline
         sf::Vector2f position;
         float radius;
         int id;
+
+        int maxCapacity = 100;
+        int waitingPassengers = 0;
+
+        virtual void drawInfo(sf::RenderWindow &window, sf::Font const &font) const override;
     };
 } // namespace loopline
 

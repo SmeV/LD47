@@ -14,7 +14,8 @@ namespace loopline
         private:
 
         public:
-        Rails(std::vector<sf::Vector2f> const &pts = {});
+        enum Pathfinding{LINEAR, CUBIC};
+        Rails(std::vector<sf::Vector2f> const &pts = {}, Pathfinding path = CUBIC);
         ~Rails();
 
         sf::Vector2f getWorldPosition(float railPosition) const;
@@ -25,9 +26,10 @@ namespace loopline
         virtual void fixedUpdate(sf::Time const &deltaTime);
         virtual void draw(sf::RenderWindow& window) const;
 
+        Pathfinding path;
         std::vector<sf::Vector2f> controlPoints;
         std::vector<float> railLengths;
-        Train train;
+        std::vector<Train> trains;
     };
 } // namespace loopline
 
