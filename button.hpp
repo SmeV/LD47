@@ -35,6 +35,7 @@ namespace loopline
         sf::RectangleShape button;
         sf::Color textNormal, textHover, textClick;
         sf::Color buttonNormal, buttonHover, buttonClick;
+        bool active = true;
 
         std::vector<std::function<void()>> clickFunctions;
     };

@@ -11,8 +11,6 @@ namespace loopline
     LoopLine::LoopLine()
         : window(sf::VideoMode{800, 600}, "Loop Line!"), rails({{10.f, 10.f}, {200.f,400.f},{400.f,100.f},{600.f, 300.f},{790.f, 10.f}, {10.f, 590.f}})
     {
-        /// upgradeablestationpositions
-        /// {4136.f, 1496.f}, {5544.f, 1820.f}, {1960.f, 2124.f}
         std::vector<sf::Vector2f> stationPositions{{{2252.f, 3212.f}, {3612.f, 2932.f}, {4844.f, 3052.f}}};
         for(auto& stationPosition : stationPositions)
         {
@@ -77,10 +75,50 @@ namespace loopline
         wagonButton.setText("Buy Wagon");
         wagonButton.setButton({200.f, 70.f}, {0.f, 0.f});
         wagonButton.setBuyFunc([this]() { upgradeWagon(); });
-        wagonButton.cost = 10;
-
+        wagonButton.cost = 0;
         wagonButton.changePosition({120.f, 70.f});
         wagonButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
+
+        speedButton.setText("Buy Speed");
+        speedButton.setButton({200.f, 70.f}, {0.f, 0.f});
+        speedButton.setBuyFunc([this]() { upgradeSpeed(); });
+        speedButton.cost = 0;
+        speedButton.changePosition({120.f, 70.f + 70.f + 20.f});
+        speedButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
+
+        accelButton.setText("Buy Accel");
+        accelButton.setButton({200.f, 70.f}, {0.f, 0.f});
+        accelButton.setBuyFunc([this]() { upgradeAccel(); });
+        accelButton.cost = 0;
+        accelButton.changePosition({120.f, 70.f + 140.f + 40.f});
+        accelButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
+
+        /// upgradeablestationpositions
+        /// {4136.f, 1496.f}, {5544.f, 1820.f}, {1960.f, 2124.f}
+        station1Button.setText("Buy Station");
+        station1Button.setButton({200.f, 70.f}, {0.f, 0.f});
+        station1Button.setBuyFunc([this]() { buyStation1(); });
+        station1Button.cost = 0;
+        station1Button.changePosition(sf::Vector2f{4136.f, 1496.f} - 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)});
+        station1Button.changeAnchor(sf::Vector2f{0.f, 0.f});
+
+        /// upgradeablestationpositions
+        /// {4136.f, 1496.f}, {5544.f, 1820.f}, {1960.f, 2124.f}
+        station2Button.setText("Buy Station");
+        station2Button.setButton({200.f, 70.f}, {0.f, 0.f});
+        station2Button.setBuyFunc([this]() { buyStation2(); });
+        station2Button.cost = 0;
+        station2Button.changePosition(sf::Vector2f{5544.f, 1820.f} - 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)});
+        station2Button.changeAnchor(sf::Vector2f{0.f, 0.f});
+
+        /// upgradeablestationpositions
+        /// {4136.f, 1496.f}, {5544.f, 1820.f}, {1960.f, 2124.f}
+        station3Button.setText("Buy Station");
+        station3Button.setButton({200.f, 70.f}, {0.f, 0.f});
+        station3Button.setBuyFunc([this]() { buyStation3(); });
+        station3Button.cost = 0;
+        station3Button.changePosition(sf::Vector2f{1960.f, 2124.f} - 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)});
+        station3Button.changeAnchor(sf::Vector2f{0.f, 0.f});
 
         for(auto& station : stations)
         {
@@ -192,6 +230,8 @@ namespace loopline
         greyPause.setPosition(uiView.getCenter());
 
         wagonButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
+        speedButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
+        accelButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
     }
 
     void LoopLine::handleEvents()
@@ -271,10 +311,16 @@ namespace loopline
         auto mousePos = uiView.getCenter() - 0.5f * uiView.getSize() + sf::Vector2f(sf::Mouse::getPosition(window));
 
         intersected = wagonButton.mouseUpdate(mousePos);
+        intersected = speedButton.mouseUpdate(mousePos);
+        intersected = accelButton.mouseUpdate(mousePos);
 
         if(intersected) return;
 
         // game update
+        mousePos = camera.getCenter() - 0.5f * camera.getSize() + sf::Vector2f(sf::Mouse::getPosition(window));
+        station1Button.mouseUpdate(mousePos);
+        station2Button.mouseUpdate(mousePos);
+        station3Button.mouseUpdate(mousePos);
     }
 
     void LoopLine::render()
@@ -315,6 +361,10 @@ namespace loopline
 
             window.draw(frontMap);
 
+            station1Button.drawUI(window, textFont);
+            station2Button.drawUI(window, textFont);
+            station3Button.drawUI(window, textFont);
+
             drawInfo();
 
             if(debug) drawDebug();
@@ -325,6 +375,11 @@ namespace loopline
                 window.setView(uiView);
                 window.draw(greyPause);
                 window.setView(camera);
+
+                sf::Text pauseText{"PAUSE", textFont, 100};
+                pauseText.setOrigin( 0.5f * sf::Vector2f(pauseText.getLocalBounds().width, pauseText.getLocalBounds().height) );
+                pauseText.setPosition(camera.getCenter());
+                window.draw(pauseText);
             }
 
             break;
@@ -433,6 +488,8 @@ namespace loopline
         rails.trains[0].drawUI(window, textFont);
 
         wagonButton.drawUI(window, textFont);
+        speedButton.drawUI(window, textFont);
+        accelButton.drawUI(window, textFont);
 
         window.setView(camera);
     }
@@ -493,6 +550,66 @@ namespace loopline
             gold -= wagonButton.cost;
             rails.trains[0].addWagon(copyWagon);
             wagonButton.cost *= 2;
+        }
+    }
+
+    void LoopLine::upgradeSpeed()
+    {
+        if(gold >= speedButton.cost)
+        {
+            gold -= speedButton.cost;
+            rails.trains[0].maxSpeed *= 1.25f;
+            speedButton.cost *= 2;
+        }
+    }
+
+    void LoopLine::upgradeAccel()
+    {
+        if(gold >= accelButton.cost)
+        {
+            gold -= accelButton.cost;
+            rails.trains[0].accel->accel *= 1.5f;
+            rails.trains[0].deaccel->accel *= 1.5f;
+            accelButton.cost *= 2;
+        }
+    }
+
+        /// upgradeablestationpositions
+        /// {4136.f, 1496.f}, {5544.f, 1820.f}, {1960.f, 2124.f}
+    void LoopLine::buyStation1()
+    {
+        if(gold >= station1Button.cost)
+        {
+            gold -= station1Button.cost;
+            Station newStation{sf::Vector2f{4136.f, 1496.f} - 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)}, 300, 3};
+            newStation.setSprite(textureManager.getTexture("station1_spritesheet"), sf::IntRect{0, 0, 250, 180}, {125.f, 90.f});
+            newStation.setSpritePosition(newStation.position);
+            stations.push_back( newStation );
+            station1Button.active = false;
+        }
+    }
+    void LoopLine::buyStation2()
+    {
+        if(gold >= station2Button.cost)
+        {
+            gold -= station2Button.cost;
+            Station newStation{sf::Vector2f{5544.f, 1820.f} - 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)}, 300, 3};
+            newStation.setSprite(textureManager.getTexture("station1_spritesheet"), sf::IntRect{0, 0, 250, 180}, {125.f, 90.f});
+            newStation.setSpritePosition(newStation.position);
+            stations.push_back( newStation );
+            station2Button.active = false;
+        }
+    }
+    void LoopLine::buyStation3()
+    {
+        if(gold >= station3Button.cost)
+        {
+            gold -= station3Button.cost;
+            Station newStation{sf::Vector2f{1960.f, 2124.f} - 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)}, 300, 3};
+            newStation.setSprite(textureManager.getTexture("station1_spritesheet"), sf::IntRect{0, 0, 250, 180}, {125.f, 90.f});
+            newStation.setSpritePosition(newStation.position);
+            stations.push_back( newStation );
+            station3Button.active = false;
         }
     }
 } // namespace loopline

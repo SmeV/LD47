@@ -40,6 +40,7 @@ namespace loopline
 
         bool Button::mouseUpdate(sf::Vector2f const &mousePos)
         {
+            if(!active) return false;
             auto oldState = state;
             if(isHovered(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
@@ -80,6 +81,7 @@ namespace loopline
 
         void Button::drawUI(sf::RenderWindow &window, sf::Font const &font) const
         {
+            if(!active) return;
             sf::Text drawText{text, font};
             drawText.setOrigin(0.5f * sf::Vector2f{drawText.getLocalBounds().width, drawText.getLocalBounds().height} + sf::Vector2f{0.f, 10.f});
             drawText.setFont(font);
