@@ -75,21 +75,21 @@ namespace loopline
         wagonButton.setText("Buy Wagon");
         wagonButton.setButton({200.f, 70.f}, {0.f, 0.f});
         wagonButton.setBuyFunc([this]() { upgradeWagon(); });
-        wagonButton.cost = 0;
+        wagonButton.cost = 10;
         wagonButton.changePosition({120.f, 70.f});
         wagonButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
 
         speedButton.setText("Buy Speed");
         speedButton.setButton({200.f, 70.f}, {0.f, 0.f});
         speedButton.setBuyFunc([this]() { upgradeSpeed(); });
-        speedButton.cost = 0;
+        speedButton.cost = 5;
         speedButton.changePosition({120.f, 70.f + 70.f + 20.f});
         speedButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
 
         accelButton.setText("Buy Accel");
         accelButton.setButton({200.f, 70.f}, {0.f, 0.f});
         accelButton.setBuyFunc([this]() { upgradeAccel(); });
-        accelButton.cost = 0;
+        accelButton.cost = 1;
         accelButton.changePosition({120.f, 70.f + 140.f + 40.f});
         accelButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
 
@@ -98,7 +98,7 @@ namespace loopline
         station1Button.setText("Buy Station");
         station1Button.setButton({200.f, 70.f}, {0.f, 0.f});
         station1Button.setBuyFunc([this]() { buyStation1(); });
-        station1Button.cost = 0;
+        station1Button.cost = 50;
         station1Button.changePosition(sf::Vector2f{4136.f, 1496.f} - 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)});
         station1Button.changeAnchor(sf::Vector2f{0.f, 0.f});
 
@@ -107,7 +107,7 @@ namespace loopline
         station2Button.setText("Buy Station");
         station2Button.setButton({200.f, 70.f}, {0.f, 0.f});
         station2Button.setBuyFunc([this]() { buyStation2(); });
-        station2Button.cost = 0;
+        station2Button.cost = 100;
         station2Button.changePosition(sf::Vector2f{5544.f, 1820.f} - 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)});
         station2Button.changeAnchor(sf::Vector2f{0.f, 0.f});
 
@@ -116,7 +116,7 @@ namespace loopline
         station3Button.setText("Buy Station");
         station3Button.setButton({200.f, 70.f}, {0.f, 0.f});
         station3Button.setBuyFunc([this]() { buyStation3(); });
-        station3Button.cost = 0;
+        station3Button.cost = 150;
         station3Button.changePosition(sf::Vector2f{1960.f, 2124.f} - 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)});
         station3Button.changeAnchor(sf::Vector2f{0.f, 0.f});
 
