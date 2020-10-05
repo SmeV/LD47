@@ -70,6 +70,7 @@ namespace loopline
         rails.trains.resize(1);
 
         rails.trains[0].setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 150, 90}, {90.f, 30.f});
+        rails.trains[0].railPosition = 15530;
 
         copyWagon.setSprite(textureManager.getTexture("waggon_spritesheet"), sf::IntRect{0, 0, 150, 90}, {90.f, 30.f});
         wagonButton.setText("Buy Wagon");
@@ -298,6 +299,8 @@ namespace loopline
         case PAUSE:
             break;
         }
+
+        std::cout << rails.trains[0].railPosition << std::endl;
     }
 
     void LoopLine::mouseUpdate()
