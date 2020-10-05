@@ -63,6 +63,7 @@ namespace loopline
         rails.trains[0].setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
 
         copyWagon.setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
+        wagonButton.setButton({200.f, 100.f}, {0.f, 0.f});
 
         for(auto& station : stations)
         {
@@ -108,6 +109,9 @@ namespace loopline
 
         // make a single normal update
         update(elapsed);
+
+        // make a mouse update
+        mouseUpdate(sf::Mouse::getPosition(window));
 
         // make as many fixed updates as needed for the elapsed time
         while (elapsed > updateTime)
@@ -196,6 +200,11 @@ namespace loopline
         case PAUSE:
             break;
         }
+    }
+
+    void LoopLine::mouseUpdate(sf::Vector2i const &mousePos)
+    {
+        wagonButton.mouseUpdate(mousePos);
     }
 
     void LoopLine::render()
@@ -347,6 +356,8 @@ namespace loopline
 
         window.draw(goldText);
         rails.trains[0].drawUI(window, textFont);
+
+        wagonButton.drawUI(window, textFont);
 
         window.setView(camera);
     }

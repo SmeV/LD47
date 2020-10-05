@@ -18,6 +18,7 @@ add_executable(LD47
     passenger.cpp
     obstacle.cpp
     helper.cpp
+    button.cpp
 )
 
 target_link_libraries(LD47 sfml-window sfml-graphics sfml-audio sfml-network)
