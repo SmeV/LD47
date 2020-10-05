@@ -21,7 +21,7 @@ namespace loopline
 
         TextureManager textureManager;
         InputManager inputManager;
-        GameState state = GAME;
+        GameState state = MENU;
 
         sf::RenderWindow window;
 

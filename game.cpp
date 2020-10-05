@@ -260,6 +260,7 @@ namespace loopline
         inputManager.addEventCommand(rails.trains[0].deaccel, sf::Keyboard::S);
         inputManager.addReleaseEventCommand(rails.trains[0].noaccel, sf::Keyboard::W);
         inputManager.addReleaseEventCommand(rails.trains[0].noaccel, sf::Keyboard::S);
+        inputManager.addEventCommand(std::make_shared<loopline::LambdaCommand>([this](){ if(state == MENU) { state = GAME; }}), sf::Keyboard::Enter);
 
         inputManager.addEventCommand(std::make_shared<loopline::LambdaCommand>([this]() { window.close(); }), sf::Keyboard::Escape);
         inputManager.addEventCommand(std::make_shared<loopline::LambdaCommand>([this]()
@@ -438,9 +439,17 @@ namespace loopline
     void LoopLine::render()
     {
         float speedZoom = 1.0f;
+        sf::Text title{"Loop Line!", textFont, 40U};
         switch(state)
         {
         case MENU:
+            title.setOrigin(0.5f * sf::Vector2f(title.getLocalBounds().width, title.getLocalBounds().height));
+            title.setPosition(uiView.getCenter() - 0.5f * sf::Vector2f{0.f, uiView.getSize().y} + sf::Vector2f{0.f, 50.f});
+            title.setColor(sf::Color::Black);
+
+            window.setView(uiView);
+            window.clear(sf::Color::White);
+            window.draw(title);
             break;
 
         case GAME:
@@ -453,7 +462,7 @@ namespace loopline
             window.setView(camera);
 
             // clear the window with black color
-            window.clear(sf::Color::Black);
+            window.clear(sf::Color::Green);
 
             window.draw(worldMap);
 
@@ -465,11 +474,6 @@ namespace loopline
             for(auto& oRails : obstacleRails)
             {
                 oRails.draw(window);
-            }
-
-            for(auto& noRails : nonObstacleRails)
-            {
-                noRails.draw(window);
             }
 
             window.draw(middleMap);
@@ -487,6 +491,12 @@ namespace loopline
 
             window.draw(frontMap);
 
+            for(auto& noRails : nonObstacleRails)
+            {
+                noRails.draw(window);
+            }
+
+
             station1Button.drawUI(window, textFont);
             station2Button.drawUI(window, textFont);
             station3Button.drawUI(window, textFont);
@@ -503,6 +513,7 @@ namespace loopline
                 window.setView(camera);
 
                 sf::Text pauseText{"PAUSE", textFont, 100};
+                pauseText.setFillColor(sf::Color::Black);
                 pauseText.setOrigin( 0.5f * sf::Vector2f(pauseText.getLocalBounds().width, pauseText.getLocalBounds().height) );
                 pauseText.setPosition(camera.getCenter());
                 window.draw(pauseText);
@@ -619,12 +630,7 @@ namespace loopline
             }
         }
 
-        //crashText.push_back(std::mae)
         crashClock.restart();
-        // TODO: CRASH!!!
-        //rails.trains[0].addWagon(copyWagon);
-        //crashedInto.setSprite(textureManager.getTexture("car_spritesheet"),  sf::IntRect{63, 0, 63, 37}, sf::Vector2f{31.5f, 23.5f});
-        //state = PAUSE;
     }
 
     void LoopLine::drawUI()

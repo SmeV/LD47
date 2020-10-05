@@ -1,5 +1,7 @@
 #include "passenger.hpp"
 
+#include <algorithm>
+
 namespace loopline
 {
     Passenger::Passenger(){}
@@ -29,7 +31,7 @@ namespace loopline
 
         if(waited < minWaitingTime) return gold;
         
-        return (1.f - (waited - minWaitingTime) / (maxWaitingTime - minWaitingTime)) * gold;
+        return std::max(0.f, (1.f - (waited - minWaitingTime) / (maxWaitingTime - minWaitingTime)) * gold);
     }
 
 } // namespace loopline
