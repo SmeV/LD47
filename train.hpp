@@ -25,13 +25,14 @@ namespace loopline
         {
             private:
             Train* train;
-            float accel;
 
             public:
             AccelCommand(Train *train = NULL, float accel = 0.f);
             virtual ~AccelCommand() override;
             virtual void execute() override;
             virtual void undo() override;
+
+            float accel;
         };
         enum TrainState{DRIVING, STOPPED};
 

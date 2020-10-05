@@ -63,13 +63,27 @@ namespace loopline
         rails.trains[0].setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
 
         copyWagon.setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
+
         wagonButton.setText("Buy Wagon");
         wagonButton.setButton({200.f, 70.f}, {0.f, 0.f});
         wagonButton.setBuyFunc([this]() { upgradeWagon(); });
-        wagonButton.cost = 10;
-
+        wagonButton.cost = 0;
         wagonButton.changePosition({120.f, 70.f});
         wagonButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
+
+        speedButton.setText("Buy Speed");
+        speedButton.setButton({200.f, 70.f}, {0.f, 0.f});
+        speedButton.setBuyFunc([this]() { upgradeSpeed(); });
+        speedButton.cost = 0;
+        speedButton.changePosition({120.f, 70.f + 70.f + 20.f});
+        speedButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
+
+        accelButton.setText("Buy Accel");
+        accelButton.setButton({200.f, 70.f}, {0.f, 0.f});
+        accelButton.setBuyFunc([this]() { upgradeAccel(); });
+        accelButton.cost = 0;
+        accelButton.changePosition({120.f, 70.f + 140.f + 40.f});
+        accelButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
 
         for(auto& station : stations)
         {
@@ -142,6 +156,8 @@ namespace loopline
         greyPause.setPosition(uiView.getCenter());
 
         wagonButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
+        speedButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
+        accelButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
     }
 
     void LoopLine::handleEvents()
@@ -221,6 +237,8 @@ namespace loopline
         auto mousePos = uiView.getCenter() - 0.5f * uiView.getSize() + sf::Vector2f(sf::Mouse::getPosition(window));
 
         intersected = wagonButton.mouseUpdate(mousePos);
+        intersected = speedButton.mouseUpdate(mousePos);
+        intersected = accelButton.mouseUpdate(mousePos);
 
         if(intersected) return;
 
@@ -378,6 +396,8 @@ namespace loopline
         rails.trains[0].drawUI(window, textFont);
 
         wagonButton.drawUI(window, textFont);
+        speedButton.drawUI(window, textFont);
+        accelButton.drawUI(window, textFont);
 
         window.setView(camera);
     }
@@ -438,6 +458,27 @@ namespace loopline
             gold -= wagonButton.cost;
             rails.trains[0].addWagon(copyWagon);
             wagonButton.cost *= 2;
+        }
+    }
+
+    void LoopLine::upgradeSpeed()
+    {
+        if(gold >= speedButton.cost)
+        {
+            gold -= speedButton.cost;
+            rails.trains[0].maxSpeed *= 1.25f;
+            speedButton.cost *= 2;
+        }
+    }
+
+    void LoopLine::upgradeAccel()
+    {
+        if(gold >= accelButton.cost)
+        {
+            gold -= accelButton.cost;
+            rails.trains[0].accel->accel *= 1.5f;
+            rails.trains[0].deaccel->accel *= 1.5f;
+            accelButton.cost *= 2;
         }
     }
 } // namespace loopline

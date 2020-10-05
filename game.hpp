@@ -56,6 +56,8 @@ namespace loopline
 
         TrainWagon copyWagon;
         Upgrade wagonButton;
+        Upgrade speedButton;
+        Upgrade accelButton;
 
         bool debug = false;
 
@@ -88,6 +90,8 @@ namespace loopline
         void drawDebug();
 
         void upgradeWagon();
+        void upgradeSpeed();
+        void upgradeAccel();
     };
 }
 
