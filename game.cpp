@@ -469,7 +469,7 @@ namespace loopline
     void LoopLine::crash(Train &crashedInto)
     {
         // TODO: CRASH!!!
-        rails.trains[0].addWagon(copyWagon);
+        //rails.trains[0].addWagon(copyWagon);
         //crashedInto.setSprite(textureManager.getTexture("car_spritesheet"),  sf::IntRect{63, 0, 63, 37}, sf::Vector2f{31.5f, 23.5f});
         //state = PAUSE;
     }
