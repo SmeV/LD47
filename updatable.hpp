@@ -10,7 +10,7 @@ namespace loopline
     public:
         virtual void update(sf::Time const &deltaTime) {}
         virtual void fixedUpdate(sf::Time const &deltaTime) {}
-        virtual void mouseUpdate(sf::Vector2i const &mousePos) {}
+        virtual bool mouseUpdate(sf::Vector2f const &mousePos) { return false; }
 
     private:
     };

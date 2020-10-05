@@ -63,7 +63,13 @@ namespace loopline
         rails.trains[0].setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
 
         copyWagon.setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
-        wagonButton.setButton({200.f, 100.f}, {0.f, 0.f});
+        wagonButton.setText("Buy Wagon");
+        wagonButton.setButton({200.f, 70.f}, {0.f, 0.f});
+        wagonButton.setBuyFunc([this]() { upgradeWagon(); });
+        wagonButton.cost = 10;
+
+        wagonButton.changePosition({120.f, 70.f});
+        wagonButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
 
         for(auto& station : stations)
         {
@@ -111,7 +117,7 @@ namespace loopline
         update(elapsed);
 
         // make a mouse update
-        mouseUpdate(sf::Mouse::getPosition(window));
+        mouseUpdate();
 
         // make as many fixed updates as needed for the elapsed time
         while (elapsed > updateTime)
@@ -134,6 +140,8 @@ namespace loopline
         greyPause.setSize(uiView.getSize());
         greyPause.setOrigin(0.5f * greyPause.getSize());
         greyPause.setPosition(uiView.getCenter());
+
+        wagonButton.changeAnchor(uiView.getCenter() - 0.5f * uiView.getSize());
     }
 
     void LoopLine::handleEvents()
@@ -202,9 +210,21 @@ namespace loopline
         }
     }
 
-    void LoopLine::mouseUpdate(sf::Vector2i const &mousePos)
+    void LoopLine::mouseUpdate()
     {
-        wagonButton.mouseUpdate(mousePos);
+        bool intersected = false;
+        // menu update TODO?
+
+        if(intersected) return;
+
+        // ui update
+        auto mousePos = uiView.getCenter() - 0.5f * uiView.getSize() + sf::Vector2f(sf::Mouse::getPosition(window));
+
+        intersected = wagonButton.mouseUpdate(mousePos);
+
+        if(intersected) return;
+
+        // game update
     }
 
     void LoopLine::render()
@@ -408,6 +428,16 @@ namespace loopline
         {
             controlDot.setPosition(rails.controlPoints[i]);
             window.draw(controlDot);
+        }
+    }
+
+    void LoopLine::upgradeWagon()
+    {
+        if(gold >= wagonButton.cost)
+        {
+            gold -= wagonButton.cost;
+            rails.trains[0].addWagon(copyWagon);
+            wagonButton.cost *= 2;
         }
     }
 } // namespace loopline

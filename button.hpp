@@ -17,13 +17,13 @@ namespace loopline
         enum State{NORMAL, HOVER, CLICK};
         Button(sf::Vector2f const &size = sf::Vector2f{0.f, 0.f}, sf::Vector2f const &pos = sf::Vector2f{0.f, 0.f}); 
 
-        bool isHovered(sf::Vector2i const &mousePos) const;
+        bool isHovered(sf::Vector2f const &mousePos) const;
         void click() const;
 
         void setButton(sf::Vector2f const &size = sf::Vector2f{0.f, 0.f}, sf::Vector2f const &pos = sf::Vector2f{0.f, 0.f});
         void setText(std::string const &text);
 
-        virtual void mouseUpdate(sf::Vector2i const &mousePos) override;
+        virtual bool mouseUpdate(sf::Vector2f const &mousePos) override;
 
         virtual void drawUI(sf::RenderWindow &window, sf::Font const &font) const;
 
