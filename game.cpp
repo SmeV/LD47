@@ -41,6 +41,7 @@ namespace loopline
     {
         srand (time(NULL));
         obstacleRails.reserve(3);
+        nonObstacleRails.reserve(7);
 
         textureManager.loadTexture("assets/images/train.png", "train_spritesheet");
         textureManager.loadTexture("assets/images/waggon.png", "waggon_spritesheet");
@@ -49,6 +50,11 @@ namespace loopline
         textureManager.loadTexture("assets/images/mbg.png", "middlemap");
         textureManager.loadTexture("assets/images/vbg.png", "frontmap");
         textureManager.loadTexture("assets/images/cars_100x60.png", "car_spritesheet");
+        textureManager.loadTexture("assets/images/witch.png", "witch_spritesheet");
+        textureManager.loadTexture("assets/images/fliegzeug_177x120.png", "birds_spritesheet");
+        textureManager.loadTexture("assets/images/plane.png", "plane_spritesheet");
+        textureManager.loadTexture("assets/images/wolken_109x91.png", "wolken_spritesheet");
+        
 
         worldMap.setTexture(textureManager.getTexture("worldmap"));
         worldMap.setOrigin(0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)});
@@ -166,6 +172,29 @@ namespace loopline
         obstacleRails[2].trains[0].speed = 1000.f;
         obstacleRails[2].trains[0].setSprite(textureManager.getTexture("car_spritesheet"), sf::IntRect{200, 0, 100, 60}, sf::Vector2f{50.f, 30.f});
 
+        //non obstacles
+        std::vector<sf::Vector2f> nonObsPoints = {{{-100.f, 1000.f},{8100.f, 1000.f}}};
+        for(auto& nonObsPoint : nonObsPoints)
+        {
+            nonObsPoint -= 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)};
+        }
+        nonObstacleRails.push_back(Rails{nonObsPoints, Rails::LINEAR});
+        nonObstacleRails[0].trains.resize(1);
+        nonObstacleRails[0].trains[0].maxSpeed = 1000.f;
+        nonObstacleRails[0].trains[0].speed = 1000.f;
+        nonObstacleRails[0].trains[0].setSprite(textureManager.getTexture("plane_spritesheet"), sf::IntRect{0, 0, 180, 112});
+
+        nonObsPoints = {{{-100.f, 2000.f},{8100.f, 2000.f}}};
+        for(auto& nonObsPoint : nonObsPoints)
+        {
+            nonObsPoint -= 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)};
+        }
+        nonObstacleRails.push_back(Rails{nonObsPoints, Rails::LINEAR});
+        nonObstacleRails[1].trains.resize(1);
+        nonObstacleRails[1].trains[0].maxSpeed = 600.f;
+        nonObstacleRails[1].trains[0].speed = 6000.f;
+        nonObstacleRails[1].trains[0].setSprite(textureManager.getTexture("birds_spritesheet"), sf::IntRect{0, 0, 177, 120});
+
         //inputManager.addEventCommand(rails.trains[0].accel, sf::Keyboard::W);
         inputManager.addEventCommand(rails.trains[0].accel, sf::Keyboard::W);
         inputManager.addEventCommand(rails.trains[0].deaccel, sf::Keyboard::S);
@@ -271,6 +300,10 @@ namespace loopline
             {
                 oRails.update(deltaTime);
             }
+            for(auto& noRails : nonObstacleRails)
+            {
+                noRails.update(deltaTime);
+            }
             break;
         case PAUSE:
             break;
@@ -289,6 +322,11 @@ namespace loopline
             for(auto& oRails : obstacleRails)
             {
                 oRails.fixedUpdate(deltaTime);
+            }
+
+            for(auto& noRails : nonObstacleRails)
+            {
+                noRails.fixedUpdate(deltaTime);
             }
 
             spawnPassengers(deltaTime);
@@ -356,6 +394,11 @@ namespace loopline
             for(auto& oRails : obstacleRails)
             {
                 oRails.draw(window);
+            }
+
+            for(auto& noRails : nonObstacleRails)
+            {
+                noRails.draw(window);
             }
 
             window.draw(middleMap);
@@ -543,6 +586,16 @@ namespace loopline
         {
             controlDot.setPosition(rails.controlPoints[i]);
             window.draw(controlDot);
+        }
+
+        for(auto& noRails : nonObstacleRails)
+        {
+            railLength = noRails.railLengths[noRails.railLengths.size() - 1];
+            for (float i = 0.0f; i < railLength; i += 2.f)
+            {
+                railDot.setPosition(noRails.getWorldPosition(i));
+                window.draw(railDot);
+            }
         }
     }
 

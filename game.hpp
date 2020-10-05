@@ -50,6 +50,7 @@ namespace loopline
         float crashRadius = 50.f;
 
         std::vector<Rails> obstacleRails;
+        std::vector<Rails> nonObstacleRails;
 
         sf::Sprite worldMap;
         sf::Sprite middleMap;
