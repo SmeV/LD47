@@ -10,7 +10,7 @@ namespace loopline
     {
         private:
         public:
-        TrainWagon(float length = 120.f);
+        TrainWagon(float length = 170.f);
         ~TrainWagon();
         TrainWagon(TrainWagon const &wagon);
 
