@@ -42,6 +42,7 @@ namespace loopline
         srand (time(NULL));
         obstacleRails.reserve(3);
 
+        textFont.loadFromFile("assets/COOPBL.TTF");
         textureManager.loadTexture("assets/images/train.png", "train_spritesheet");
         textureManager.loadTexture("assets/images/waggon.png", "waggon_spritesheet");
         textureManager.loadTexture("assets/images/station1.png", "station1_spritesheet");
@@ -49,6 +50,11 @@ namespace loopline
         textureManager.loadTexture("assets/images/mbg.png", "middlemap");
         textureManager.loadTexture("assets/images/vbg.png", "frontmap");
         textureManager.loadTexture("assets/images/cars_100x60.png", "car_spritesheet");
+        textureManager.loadTexture("assets/images/crash.png", "crash");
+
+        crashSprite.setTexture(textureManager.getTexture("crash"));
+        crashTextcopy.setFont(textFont);
+        crashTextcopy.setCharacterSize(25U);
 
         worldMap.setTexture(textureManager.getTexture("worldmap"));
         worldMap.setOrigin(0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)});
@@ -179,7 +185,7 @@ namespace loopline
         }), sf::Keyboard::P);
         inputManager.addEventCommand(std::make_shared<loopline::LambdaCommand>([this]() { debug = !debug; }), sf::Keyboard::F1);
 
-        textFont.loadFromFile("assets/COOPBL.TTF");
+        crashClock.restart();
     }
 
     void LoopLine::start()
@@ -294,10 +300,23 @@ namespace loopline
             updatePassengers(deltaTime);
             checkCrash(deltaTime);
 
+            for(auto& crashCloud : crashClouds)
+            {
+                crashCloud.second -= deltaTime;
+                crashCloud.first.move(sf::Vector2f{0.f, -25.f * deltaTime.asSeconds()});
+            }
+            for(auto& crashText : crashTexts)
+            {
+                crashText.second -= deltaTime;
+                crashText.first.move(sf::Vector2f{0.f, -25.f * deltaTime.asSeconds()});
+            }
+
             break;
         case PAUSE:
             break;
         }
+        crashClouds.erase(std::remove_if(crashClouds.begin(), crashClouds.end(), [] (std::pair<sf::Sprite, sf::Time> p) {return p.second < sf::seconds(0);}), crashClouds.end());
+        crashTexts.erase(std::remove_if(crashTexts.begin(), crashTexts.end(), [] (std::pair<sf::Text, sf::Time> p) {return p.second < sf::seconds(0);}), crashTexts.end());
     }
 
     void LoopLine::mouseUpdate()
@@ -358,6 +377,15 @@ namespace loopline
             window.draw(middleMap);
 
             rails.draw(window);
+
+            for(auto& crashCloud : crashClouds)
+            {
+                window.draw(crashCloud.first);
+            };
+            for(auto& crashText : crashTexts)
+            {
+                window.draw(crashText.first);
+            };
 
             window.draw(frontMap);
 
@@ -461,13 +489,38 @@ namespace loopline
                 sf::Vector2f obstaclePosition = rail.getWorldPosition(obstacle.railPosition);
 
                 float distance = vectorLength(ourTrainPosition - obstaclePosition);
-                if(distance <= crashRadius) crash(obstacle);
+                if(distance <= crashRadius) crash(obstacle, rail.getWorldPosition(obstacle.railPosition));
             }
         }
     }
 
-    void LoopLine::crash(Train &crashedInto)
+    void LoopLine::crash(Train &crashedInto, sf::Vector2f const &position)
     {
+        if(crashClock.getElapsedTime() < crashCooldown) return;
+
+        crashSprite.setPosition(position - sf::Vector2f{0.f, 100.f});
+        crashClouds.push_back(std::make_pair(crashSprite, sf::seconds(5)));
+
+        int fledPassengers = static_cast<int>(rand() % (rails.trains[0].passengers+1));
+        sf::Text crashText{"          CRASH!\n" + std::to_string(fledPassengers) + " passengers fled your train to survive!", textFont, 25U};
+        crashText.setOrigin(0.5f * sf::Vector2f{crashText.getLocalBounds().width, crashText.getLocalBounds().height});
+        crashText.setPosition(position - sf::Vector2f{0.f, 150.f});
+        crashText.setColor(sf::Color::Red);
+        crashTexts.push_back(std::make_pair(crashText, sf::seconds(5)));
+
+        for(auto& passenger : passengers)
+        {
+            if(fledPassengers == 0) break;
+
+            if(passenger.boardedTrain && !passenger.killPassenger)
+            {
+                passenger.killPassenger = true;
+                fledPassengers--;
+            }
+        }
+
+        //crashText.push_back(std::mae)
+        crashClock.restart();
         // TODO: CRASH!!!
         //rails.trains[0].addWagon(copyWagon);
         //crashedInto.setSprite(textureManager.getTexture("car_spritesheet"),  sf::IntRect{63, 0, 63, 37}, sf::Vector2f{31.5f, 23.5f});
