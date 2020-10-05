@@ -60,6 +60,9 @@ namespace loopline
         Upgrade wagonButton;
         Upgrade speedButton;
         Upgrade accelButton;
+        Upgrade station1Button;
+        Upgrade station2Button;
+        Upgrade station3Button;
 
         bool debug = false;
 
@@ -94,6 +97,10 @@ namespace loopline
         void upgradeWagon();
         void upgradeSpeed();
         void upgradeAccel();
+
+        void buyStation1();
+        void buyStation2();
+        void buyStation3();
     };
 }
 

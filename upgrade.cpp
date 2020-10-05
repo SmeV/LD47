@@ -34,6 +34,7 @@ namespace loopline
 
     void Upgrade::drawUI(sf::RenderWindow &window, sf::Font const &font) const
     {
+        if(!active) return;
         Button::drawUI(window, font);
 
         sf::Text costText("Cost: " + std::to_string(cost), font, 15U);
