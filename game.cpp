@@ -11,9 +11,17 @@ namespace loopline
     LoopLine::LoopLine()
         : window(sf::VideoMode{800, 600}, "Loop Line!"), rails({{10.f, 10.f}, {200.f,400.f},{400.f,100.f},{600.f, 300.f},{790.f, 10.f}, {10.f, 590.f}})
     {
-        Station s1(sf::Vector2f(200.f,400.f), 300.f, 0);
-        Station s2(sf::Vector2f(600.f,300.f), 300.f, 1);
-        Station s3(sf::Vector2f(10.f,590.f), 300.f, 2);
+        /// upgradeablestationpositions
+        /// {4136.f, 1496.f}, {5544.f, 1820.f}, {1960.f, 2124.f}
+        std::vector<sf::Vector2f> stationPositions{{{2252.f, 3212.f}, {3612.f, 2932.f}, {4844.f, 3052.f}}};
+        for(auto& stationPosition : stationPositions)
+        {
+            stationPosition -= 0.5f * sf::Vector2f{8000.f, 4000.f};
+        }
+
+        Station s1(stationPositions[0], 300.f, 0);
+        Station s2(stationPositions[1], 300.f, 1);
+        Station s3(stationPositions[2], 300.f, 2);
 
         stations = std::vector<Station> ({s1, s2, s3});
 
@@ -34,24 +42,26 @@ namespace loopline
     void LoopLine::initializeGame()
     {
         srand (time(NULL));
-
-        obstacleRails.push_back(Rails{{{-3999.f, 0.f},{4001.f, 0.f}}, Rails::LINEAR});
-        obstacleRails[0].trains.resize(1);
-        obstacleRails[0].trains[0].maxSpeed = 1000.f;
-        obstacleRails[0].trains[0].speed = 1000.f;
-
+        obstacleRails.reserve(3);
 
         textureManager.loadTexture("assets/images/train.png", "train_spritesheet");
         textureManager.loadTexture("assets/images/station1.png", "station1_spritesheet");
         textureManager.loadTexture("assets/images/bg.png", "worldmap");
-        textureManager.loadTexture("assets/images/cars.png", "car_spritesheet");
-
-        obstacleRails[0].trains[0].setSprite(textureManager.getTexture("car_spritesheet"), sf::IntRect{0, 0, 63, 37}, sf::Vector2f{31.5f, 23.5f});
+        textureManager.loadTexture("assets/images/mbg.png", "middlemap");
+        textureManager.loadTexture("assets/images/vbg.png", "frontmap");
+        textureManager.loadTexture("assets/images/cars_100x60.png", "car_spritesheet");
 
         worldMap.setTexture(textureManager.getTexture("worldmap"));
         worldMap.setOrigin(0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)});
         worldMap.setPosition(sf::Vector2f{0.f, 0.f});
 
+        middleMap.setTexture(textureManager.getTexture("middlemap"));
+        middleMap.setOrigin(0.5f * sf::Vector2f{static_cast<float>(middleMap.getTextureRect().width), static_cast<float>(middleMap.getTextureRect().height)});
+        middleMap.setPosition(sf::Vector2f{0.f, 0.f});
+
+        frontMap.setTexture(textureManager.getTexture("frontmap"));
+        frontMap.setOrigin(0.5f * sf::Vector2f{static_cast<float>(frontMap.getTextureRect().width), static_cast<float>(frontMap.getTextureRect().height)});
+        frontMap.setPosition(sf::Vector2f{0.f, 0.f});
 
         for(auto& worldControl : worldControlPoints)
         {
@@ -60,16 +70,55 @@ namespace loopline
         rails.setControlPoints(worldControlPoints);
         rails.trains.resize(1);
 
-        rails.trains[0].setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
+        rails.trains[0].setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 150, 90}, {90.f, 30.f});
 
-        copyWagon.setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 100, 60}, {60.f, 12.f});
+        copyWagon.setSprite(textureManager.getTexture("train_spritesheet"), sf::IntRect{0, 0, 150, 90}, {90.f, 30.f});
         wagonButton.setButton({200.f, 100.f}, {0.f, 0.f});
 
         for(auto& station : stations)
         {
-            station.setSprite(textureManager.getTexture("station1_spritesheet"), sf::IntRect{0, 0, 150, 107}, {75.f, 53.5f});
+            station.setSprite(textureManager.getTexture("station1_spritesheet"), sf::IntRect{0, 0, 250, 180}, {125.f, 90.f});
             station.setSpritePosition(station.position);
         }
+
+        /// obstacle points track right 
+        std::vector<sf::Vector2f> obstaclePoints{{{8500.f, 2312.f},{5348.f, 2432}, {5376.f, 4501.f},{8500.f, 4501.f}}};
+        for(auto& obstaclePoint : obstaclePoints)
+        {
+            obstaclePoint -= 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)};
+        }
+
+        obstacleRails.push_back(Rails{obstaclePoints, Rails::LINEAR});
+        obstacleRails[0].trains.resize(1);
+        obstacleRails[0].trains[0].maxSpeed = 1000.f;
+        obstacleRails[0].trains[0].speed = 1000.f;
+        obstacleRails[0].trains[0].setSprite(textureManager.getTexture("car_spritesheet"), sf::IntRect{0, 0, 100, 60}, sf::Vector2f{50.f, 30.f});
+
+        /// obstacle points track center 
+        std::vector<sf::Vector2f> obstaclePoints1 = {{{8000.f, 2312.f}, {5348.f, 2432.f}, {5360.f, 2788.f}, {2400.f, 2812.f}, {868.f, 4000.f},{8500.f, 4501.f}}};
+        for(auto& obstaclePoint1 : obstaclePoints1)
+        {
+            obstaclePoint1 -= 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)};
+        }
+
+        obstacleRails.push_back(Rails{obstaclePoints1, Rails::LINEAR});
+        obstacleRails[1].trains.resize(1);
+        obstacleRails[1].trains[0].maxSpeed = 1000.f;
+        obstacleRails[1].trains[0].speed = 1000.f;
+        obstacleRails[1].trains[0].setSprite(textureManager.getTexture("car_spritesheet"), sf::IntRect{100, 0, 100, 60}, sf::Vector2f{50.f, 30.f});
+
+        /// obstacle points track left ring 
+        std::vector<sf::Vector2f> obstaclePoints2 = {{{1028.f, 2228.f}, {1232.f, 2272.f}, {1384.f, 2356.f}, {1520.f, 2468.f}, {1520.f, 2600.f}, {1440.f, 2692.f}, {1284.f, 2776.f}, {1136.f, 2808.f}, {976.f, 2828.f}, {792.f, 2764.f}, {616.f, 2672.f}, {480.f, 2536.f}, {532.f, 2400.f}, {644.f, 2320.f}, {760.f, 2264.f}, {880.f, 2240.f}}};
+        for(auto& obstaclePoint2 : obstaclePoints2)
+        {
+            obstaclePoint2 -= 0.5f * sf::Vector2f{static_cast<float>(worldMap.getTextureRect().width), static_cast<float>(worldMap.getTextureRect().height)};
+        }
+
+        obstacleRails.push_back(Rails{obstaclePoints2, Rails::LINEAR});
+        obstacleRails[2].trains.resize(1);
+        obstacleRails[2].trains[0].maxSpeed = 1000.f;
+        obstacleRails[2].trains[0].speed = 1000.f;
+        obstacleRails[2].trains[0].setSprite(textureManager.getTexture("car_spritesheet"), sf::IntRect{200, 0, 100, 60}, sf::Vector2f{50.f, 30.f});
 
         //inputManager.addEventCommand(rails.trains[0].accel, sf::Keyboard::W);
         inputManager.addEventCommand(rails.trains[0].accel, sf::Keyboard::W);
@@ -238,7 +287,12 @@ namespace loopline
             {
                 oRails.draw(window);
             }
+
+            window.draw(middleMap);
+
             rails.draw(window);
+
+            window.draw(frontMap);
 
             drawInfo();
 
@@ -340,7 +394,7 @@ namespace loopline
     {
         // TODO: CRASH!!!
         rails.trains[0].addWagon(copyWagon);
-        crashedInto.setSprite(textureManager.getTexture("car_spritesheet"),  sf::IntRect{63, 0, 63, 37}, sf::Vector2f{31.5f, 23.5f});
+        //crashedInto.setSprite(textureManager.getTexture("car_spritesheet"),  sf::IntRect{63, 0, 63, 37}, sf::Vector2f{31.5f, 23.5f});
         //state = PAUSE;
     }
 
