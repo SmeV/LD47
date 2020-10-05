@@ -35,7 +35,7 @@ namespace loopline
         };
         enum TrainState{DRIVING, STOPPED};
 
-        Train(float railPosition = 0.f, float speed = 0.f, float acceleration = 0.f, float length = 120.f);
+        Train(float railPosition = 0.f, float speed = 0.f, float acceleration = 0.f, float length = 170.f);
         ~Train();
         Train(Train const &train);
 

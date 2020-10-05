@@ -10,7 +10,7 @@ namespace loopline
 
         }
 
-        bool Button::isHovered(sf::Vector2i const &mousePos) const
+        bool Button::isHovered(sf::Vector2f const &mousePos) const
         {
             return button.getGlobalBounds().contains({static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)});
         }
@@ -35,12 +35,10 @@ namespace loopline
 
         void Button::setText(std::string const &text)
         {
-            buttonText.setString(text);
-            buttonText.setOrigin({buttonText.getLocalBounds().width, buttonText.getLocalBounds().height});
-            buttonText.setPosition(position);
+            this->text = text;
         }
 
-        void Button::mouseUpdate(sf::Vector2i const &mousePos)
+        bool Button::mouseUpdate(sf::Vector2f const &mousePos)
         {
             auto oldState = state;
             if(isHovered(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -76,12 +74,16 @@ namespace loopline
             {
                 click();
             }
+
+            return isHovered(mousePos);
         }
 
         void Button::drawUI(sf::RenderWindow &window, sf::Font const &font) const
         {
-            sf::Text drawText(buttonText);
+            sf::Text drawText{text, font};
+            drawText.setOrigin(0.5f * sf::Vector2f{drawText.getLocalBounds().width, drawText.getLocalBounds().height} + sf::Vector2f{0.f, 10.f});
             drawText.setFont(font);
+            drawText.setPosition(button.getPosition());
 
             window.draw(button);
             window.draw(drawText);
