@@ -375,6 +375,11 @@ namespace loopline
                 window.setView(uiView);
                 window.draw(greyPause);
                 window.setView(camera);
+
+                sf::Text pauseText{"PAUSE", textFont, 100};
+                pauseText.setOrigin( 0.5f * sf::Vector2f(pauseText.getLocalBounds().width, pauseText.getLocalBounds().height) );
+                pauseText.setPosition(camera.getCenter());
+                window.draw(pauseText);
             }
 
             break;
